@@ -1,0 +1,22 @@
+---
+
+- name: "EKS cluster"
+  hosts: all
+  become: true
+  become_method: sudo
+  become_user: root
+  tasks:
+    - name: "Install EKS Snap Package"
+      snap:
+        name: eks
+        channel: edge
+        classic: yes
+    
+    - name: "Init EKS"
+      command: "eks start"
+
+    - name: "Get command to register node into cluster"
+      command: "bash -c \" eks add-node | grep '192.168.50.' >> /vagrant/join.txt\""
+      
+    
+

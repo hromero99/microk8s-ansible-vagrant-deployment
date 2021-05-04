@@ -1,0 +1,28 @@
+---
+
+- name: "EKS cluster"
+  hosts: all
+  become: true
+  become_method: sudo
+  become_user: root
+  tasks:
+    - name: "Install EKS Snap Package"
+      snap:
+        name: eks
+        channel: edge
+        classic: yes
+    
+    - name: "Init EKS"
+      command: "eks start"
+    
+    - name: "Upload Script to register nodes"
+      copy: src={{palybook_dir}}/register.sh dest=/register.sh
+    
+    - name: "Execute Script to register nodes"
+      command: "bash -c /register.sh"
+    
+   
+    
+      
+    
+
