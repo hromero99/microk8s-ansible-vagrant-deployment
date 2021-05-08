@@ -16,6 +16,5 @@ This project is used as base for simulate how can implement Kubernetes in a IOT 
     * 192.168.50.12
 
 
-```
+
 :warning: **This configuration is for demo purposes, the SSL security is not enabled DON'T USE IN PRODUCTION WITHOUT MODIFICATIONS** :warning:
-```
