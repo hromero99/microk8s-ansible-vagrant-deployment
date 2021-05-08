@@ -1,0 +1,53 @@
+---
+- name: "Docker"
+  hosts: all
+  become: true
+  become_method: sudo
+  become_user: root
+  tasks:
+    - name: Install required system packages
+      apt: name={{ item }} state=latest update_cache=yes
+      loop: [  'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'python3-pip', 'python3-setuptools']
+
+    - name: Add Docker GPG apt Key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker Repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu focal stable
+        state: present
+
+    - name: Update apt and install docker-ce
+      apt: update_cache=yes name=docker-ce state=latest
+    
+    - name: Install pip requirements for docker
+      apt: name={{item}} state=latest
+      loop: ["python3", "python3-pip"]
+
+    - name: Install docker library
+      pip:
+        name: docker-py
+    
+    - name: Download Registry image
+      docker_image:
+        name: registry
+        source: pull
+    
+    - name: Create volume for docker images
+      docker_volume:
+        name: docker_images
+    
+    - name: Create registry container
+      docker_container:
+        name: docker_registry
+        image: "registry"
+        ports:
+          - "5000:5000"
+        env:
+          REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: "/images"
+        volumes:
+          - docker_images:/images
+
+

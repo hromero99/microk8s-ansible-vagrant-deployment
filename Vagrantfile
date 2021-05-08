@@ -7,6 +7,7 @@ Vagrant.configure(2) do |config|
         v.cpus = 1
     end
 
+
     (1..N).each do |i|
         config.vm.define "node-#{i}" do |node|
             node.vm.box = "bento/ubuntu-20.04"
@@ -27,5 +28,13 @@ Vagrant.configure(2) do |config|
         end
     end
 
+    config.vm.define "kubernetes-registry" do |registry|
+        registry.vm.box = "bento/ubuntu-20.04"
+        registry.vm.hostname = "kubernetes-registry"
+        registry.vm.network "private_network", ip: "192.168.50.2"
+        registry.vm.provision "ansible" do |ansible|
+            ansible.playbook = "./playbooks/registry.yaml"
+        end
+    end
 
 end
