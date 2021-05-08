@@ -8,15 +8,15 @@
   tasks:
     - name: "Install EKS Snap Package"
       snap:
-        name: eks
+        name: microk8s
         channel: edge
         classic: yes
     
     - name: "Init EKS"
-      command: "eks start"
+      command: "microk8s.start"
 
     - name: "Get command to register node into cluster"
-      command: "bash -c \" eks add-node | grep '192.168.50.' >> /vagrant/join.txt\""
+      command: "bash -c \" microk8s.add-node | grep '192.168.50.' >> /vagrant/join.txt\""
       
     
 

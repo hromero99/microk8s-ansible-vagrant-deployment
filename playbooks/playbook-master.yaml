@@ -8,21 +8,33 @@
   tasks:
     - name: "Install EKS Snap Package"
       snap:
-        name: eks
+        name: microk8s
         channel: edge
         classic: yes
     
     - name: "Init EKS"
-      command: "eks start"
+      command: "microk8s start"
     
-    - name: "Upload Script to register nodes"
-      copy: src={{palybook_dir}}/register.sh dest=/register.sh
+    - name: "Register token"
+      command: "bash -c \"microk8s config | grep token | awk -F ' ' '{print $2}'\""
+      register: token
     
-    - name: "Execute Script to register nodes"
-      command: "bash -c /register.sh"
+    - name: "Install kubectl"
+      snap:
+        name: kubectl
+        channel: edge
+        classic: yes
     
-   
+    - name: "Configure cluster"
+      command: "kubectl config set-cluster eks --server=https://192.168.50.10:16443 --insecure-skip-tls-verify=true"
     
-      
+    - debug: 
+        msg:  "kubectl config set-credentials eks-admin --token={{token.stdout}}"
+    - name: "Set cluster credentials"
+      command: "kubectl config set-credentials eks-admin --token={{token.stdout}}"
     
-
+    - name: "Activate cluster configuration"
+      command: "kubectl config set-context eks --user=eks-admin --cluster=eks"
+    
+    - name: "Activate config"
+      command: "kubectl config use-context eks"

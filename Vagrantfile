@@ -7,15 +7,6 @@ Vagrant.configure(2) do |config|
         v.cpus = 1
     end
 
-    config.vm.define "eks-master" do |master|
-        master.vm.box =  "bento/ubuntu-20.04"
-        master.vm.hostname = "eks-master"
-        master.vm.network "private_network", ip: "192.168.50.10"
-        master.vm.provision "ansible" do |ansible| 
-            ansible.playbook="./playbooks/playbook-master.yaml"
-        end
-    end
-
     (1..N).each do |i|
         config.vm.define "node-#{i}" do |node|
             node.vm.box = "bento/ubuntu-20.04"
@@ -26,5 +17,15 @@ Vagrant.configure(2) do |config|
             end    
         end
     end
+    
+    config.vm.define "kubernetes-master" do |master|
+        master.vm.box =  "bento/ubuntu-20.04"
+        master.vm.hostname = "eks-master"
+        master.vm.network "private_network", ip: "192.168.50.10"
+        master.vm.provision "ansible" do |ansible| 
+            ansible.playbook="./playbooks/playbook-master.yaml"
+        end
+    end
+
 
 end
