@@ -1,6 +1,6 @@
 ---
 
-- name: "EKS cluster"
+- name: "Microk8s cluster"
   hosts: all
   become: true
   become_method: sudo
@@ -12,29 +12,42 @@
         channel: edge
         classic: yes
     
-    - name: "Init EKS"
+    - name: "Install docker"
+      snap:
+        name: docker
+        classic: true
+
+    - name: "Stop Microk8s"
+      command: "microk8s stop"
+    
+    
+    - name: "Create kubectl alias"
+      command: "echo \"alias kubectl=\"sudo microk8s.kubectl\" \" >> /home/vagrant/.bashrc"
+    
+    - name: "Install python3-pip"
+      apt: name="python3-pip" state=latest update_cache=yes
+    
+    - name: "Upload autorize registry script"
+      copy:
+        src: "{{ playbook_dir }}/autorize-registry.py"
+        dest: /root/autorize-registry.py
+        force: yes
+    
+    - name: "Install requisites for script"
+      pip:
+        name: toml
+
+    - name: "Enable Miucrok8s Built-in Registry"
+      command: "microk8s enable registry"
+
+    - name: "Execute script"
+      command: "python3 /root/autorize-registry.py"
+    
+    - name: "Restart docker daemon"
+      command: "snap restart docker"
+    
+     - name: "Start Microk8s"
       command: "microk8s start"
     
-    - name: "Register token"
-      command: "bash -c \"microk8s config | grep token | awk -F ' ' '{print $2}'\""
-      register: token
     
-    - name: "Install kubectl"
-      snap:
-        name: kubectl
-        channel: edge
-        classic: yes
-    
-    - name: "Configure cluster"
-      command: "kubectl config set-cluster eks --server=https://192.168.50.10:16443 --insecure-skip-tls-verify=true"
-    
-    - debug: 
-        msg:  "kubectl config set-credentials eks-admin --token={{token.stdout}}"
-    - name: "Set cluster credentials"
-      command: "kubectl config set-credentials eks-admin --token={{token.stdout}}"
-    
-    - name: "Activate cluster configuration"
-      command: "kubectl config set-context eks --user=eks-admin --cluster=eks"
-    
-    - name: "Activate config"
-      command: "kubectl config use-context eks"
+  
