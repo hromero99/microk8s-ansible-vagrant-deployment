@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: key-storage-service
+spec:
+  selector:
+    app: keys-storage
+  type: LoadBalancer
+  ports:
+    - name: key-storage
+      port: 8000
+      targetPort: 8000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: key-storage
+  namespace: default
+spec:
+  selector:
+    app: keys-storage
+  ports:
+  - port: 8000
+  clusterIP: None
+ 

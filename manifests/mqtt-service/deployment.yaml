@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  mqtt-reader
+  namespace: default
+  labels:
+    app:  mqtt-reader
+spec:
+  selector:
+    matchLabels:
+      app: mqtt-reader
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  mqtt-reader
+    spec:
+      # initContainers:
+        # Init containers are exactly like regular containers, except:
+          # - Init containers always run to completion.
+          # - Each init container must complete successfully before the next one starts.
+      containers:
+      - name:  mqtt-reader
+        image:  192.168.50.10:32000/mqtt-reader
+        env:
+        - name: MQTT_SERVER
+          value: mosquitto
+        - name: DATA_ENCRYPTOR
+          value: http://data-encryptor:8000
+        ports:
+        - containerPort:  8000
+          name:  mqtt-reader

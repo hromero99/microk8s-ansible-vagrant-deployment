@@ -1,0 +1,39 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  mqtt-server
+  namespace: default
+  labels:
+    app:  mqtt-server
+spec:
+  selector:
+    matchLabels:
+      app: mqtt-server
+  replicas: 4
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  mqtt-server
+    spec:
+      containers:
+      - name:  mqtt-server
+        image:  192.168.50.10:32000/mosquitto
+        volumeMounts:
+          - mountPath: /mosquitto/data/
+            name: mqttdata
+        ports:
+        - containerPort:  9001
+          name:  mqtt-server
+      volumes:
+        - name: mqttdata
+          hostPath:
+            path: "/mosquitto/data/"
+      volumeMount:
+
+      restartPolicy: Always

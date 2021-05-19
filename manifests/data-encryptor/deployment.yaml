@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  data-encryptor
+  namespace: default
+  labels:
+    app:  data-encryptor
+spec:
+  selector:
+    matchLabels:
+      app: data-encryptor
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  data-encryptor
+    spec:
+      # initContainers:
+        # Init containers are exactly like regular containers, except:
+          # - Init containers always run to completion.
+          # - Each init container must complete successfully before the next one starts.
+      containers:
+      - name:  data-encryptor
+        image:  192.168.50.10:32000/data-encryptor
+        env:
+        - name: KEY_STORAGE
+          value: http://key-storage:8000
+        - name: AWS_PROXY
+          value: http://aws:8000
+        ports:
+        - containerPort:  8000
+          name:  data-encryptor
+      restartPolicy: Always

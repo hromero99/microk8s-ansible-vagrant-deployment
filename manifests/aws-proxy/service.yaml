@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: aws-service
+spec:
+  selector:
+    app: aws-proxy
+  type: LoadBalancer
+  ports:
+    - name: aws-api
+      port: 8000
+      targetPort: 8000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: aws
+  namespace: default
+spec:
+  selector:
+    app: aws-proxy
+  ports:
+  - port: 8000
+  clusterIP: None
+ 

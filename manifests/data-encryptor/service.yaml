@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: data-encryptor-service
+spec:
+  selector:
+    app: data-encryptor
+  type: LoadBalancer
+  ports:
+    - name: data-encryptor
+      port: 8000
+      targetPort: 8000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: data-encryptor
+  namespace: default
+spec:
+  selector:
+    app: data-encryptor
+  ports:
+  - port: 8000
+  clusterIP: None
+ 

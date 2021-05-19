@@ -1,15 +1,14 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name:  postgres
+  name:  aws-proxy
   namespace: default
   labels:
-    app:  postgres
+    app:  aws-proxy
 spec:
   selector:
     matchLabels:
-      app: postgres
+      app: aws-proxy
   replicas: 1
   strategy:
     rollingUpdate:
@@ -19,35 +18,27 @@ spec:
   template:
     metadata:
       labels:
-        app:  postgres
+        app:  aws-proxy
     spec:
       # initContainers:
         # Init containers are exactly like regular containers, except:
           # - Init containers always run to completion.
           # - Each init container must complete successfully before the next one starts.
       containers:
-      - name:  postgres
-        image:  postgres:latest
-        
+      - name:  aws-proxy
+        image:  192.168.50.10:32000/aws-proxy
         env:
-        - name: POSTGRES_USER
+        - name: ACCESS_KEY
           valueFrom:
             configMapKeyRef:
-              name: postgres
-              key: POSTGRES_USER
-        - name: POSTGRES_PASSWORD
+              name: aws-secrets
+              key: ACCESS_KEY
+        - name: SECRET_KEY
           valueFrom:
             configMapKeyRef:
-              name: postgres
-              key: POSTGRES_PASSWORD
+              name: aws-secrets
+              key: SECRET_KEY
         ports:
-        - containerPort:  80
-          name:  postgres
-        volumeMounts:
-        - name: localtime
-          mountPath: /etc/localtime
-      volumes:
-        - name: localtime
-          hostPath:
-            path: /usr/share/zoneinfo/Asia/Shanghai
+        - containerPort:  8000
+          name:  aws-proxy
       restartPolicy: Always

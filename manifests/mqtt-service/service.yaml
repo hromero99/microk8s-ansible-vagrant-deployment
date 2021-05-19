@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mqtt-reader
+  namespace: default
+spec:
+  selector:
+    app: mqtt-reader
+  type: LoadBalancer
+  ports:
+  - name: mqtt-reader
+    port: 8000
+    targetPort: 8000
+  
