@@ -10,12 +10,7 @@
       snap:
         name: microk8s
         channel: edge
-        classic: yes
-    
-    - name: "Install docker"
-      snap:
-        name: docker
-        classic: true
+        classic: true 
 
     - name: "Stop Microk8s"
       command: "microk8s stop"
@@ -26,27 +21,8 @@
     
     - name: "Install python3-pip"
       apt: name="python3-pip" state=latest update_cache=yes
-    
-    - name: "Upload autorize registry script"
-      copy:
-        src: "{{ playbook_dir }}/autorize-registry.py"
-        dest: /root/autorize-registry.py
-        force: yes
-    
-    - name: "Install requisites for script"
-      pip:
-        name: toml
-
-    - name: "Enable Miucrok8s Built-in Registry"
-      command: "microk8s enable registry"
-
-    - name: "Execute script"
-      command: "python3 /root/autorize-registry.py"
-    
-    - name: "Restart docker daemon"
-      command: "snap restart docker"
-    
-     - name: "Start Microk8s"
+      
+    - name: "Start Microk8s"
       command: "microk8s start"
     
     
