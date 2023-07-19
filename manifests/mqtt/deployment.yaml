@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
       - name:  mqtt-server
-        image:  192.168.50.10:32000/mosquitto
+        image:  eclipse-mosquitto
         volumeMounts:
           - mountPath: /mosquitto/data/
             name: mqttdata
